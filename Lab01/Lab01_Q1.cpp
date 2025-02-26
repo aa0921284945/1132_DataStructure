@@ -2,56 +2,8 @@
 #include <iostream>
 using namespace std;
 
-void printPairs(const vector<int>& arr) {
-    int count = 0;//for step counting
-    count++;//(i = 0)loop initialization |count 1
-    for (int i = 0; i < arr.size(); i++) {
-    count++;//(i < arr.size())loop comparison |count n
-    count++;//(j = i + 1)second loop initialization |count n
-    count++;//(j = i + 1)second loop initialization |count n
-    for (int j = i + 1; j < arr.size(); j++) {
-    count++;//(j < arr.size())loop comparison |count n(n-1)/2
-    count++;//(arr[i])loop array access |n(n-1)/2
-    count++;//(arr[j])loop array access |n(n-1)/2
-    cout << arr[i] << "," << arr[j] << endl;
-    count++;//(j++)loop increment |count n(n-1)/2
-    }
-    count++;//(i++)loop increment |count n
-    }
-    cout << "Total operations: " << count << endl;
-}
-//Total operations:
-//outer loop: 1
-//inner loop: 4n
-//printing operations: 4(n(n-1)/2)
-//Time complexity: O(n^2)
-
-int findMax(const vector<int>& arr) {
-    int count = 0;//for step counting
-    int max = arr[0];
-    count++;//(max = )initialization |count 1
-    count++;//(arr[0])initialization |count 1
-    count++;//(i = 1)loop initialization |count 1
-    for (int i = 1; i < arr.size(); i++) {
-    count++;//(i < arr.size())loop comparison |count n-1
-    count++;//(arr[i])loop array access |count n-1
-    count++;//(> max)loop comparison |count n-1
-    if (arr[i] > max) {
-        count++;//(arr[i])array access |count n-1
-        count++;//(max = )comparison |count n-1
-        max = arr[i];
-    }
-    count++;//(i++)increment |count n-1
-    }
-    count++;//(return)return |count 1
-    cout << "Total operations: " << count << endl;
-    return max;
-}
-//Total operations(worst case):
-//3 (initial) + 6(n-1) (loop) + 1 (return)=  6n - 2
-//Time complexity: O(n)
-
-
+//原本使用前後互減是否為0或1來作為區分標準，但是在隱藏測資會失敗
+//於是使用兩個bool來分別判斷可能出現的遞增或遞減兩種情況，最後再用OR來選擇是否為其中一種，或是兩種都不是。
 class Solution {
 public:
     bool isMonotonic(vector<int>& nums) {
@@ -96,7 +48,5 @@ int main() {
     vector<int> arr = { 1, 2, 3, 4, 5, 6, 7};
     class Solution sol;
     cout << boolalpha << sol.isMonotonic(arr) << endl;
-    //printPairs(arr);
-    //cout << findMax(arr) << endl;
     return 0;
 }
