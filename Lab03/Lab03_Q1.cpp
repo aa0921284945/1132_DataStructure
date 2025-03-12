@@ -39,25 +39,23 @@ public:
     }
     //通用輸出函數(假設都是+號)
     void PolyInfo() {
+        bool first = true;//初始化第一次為true
         // 由最高次數degree開始遍歷
         for (int i = degree; i >= 0; i--) {
-            // 如果係數不為0，則印出係數和次數
             if (coef[i] != 0) {
-                // 大於1次的項印出次數
+                if (!first) {//如果不是第一次
+                    cout << " + ";//印出+號
+                }
+                if (coef[i] != 0 || i == 0) {//如果係數不是0或是常數項
+                    cout << coef[i];//印出係數
+                }
                 if (i > 1) {
-                    cout << coef[i]; 
-                    cout << "x" << "^" << i <<" + ";//依序列印係數和次數
+                    cout << "x^" << i;//印出次數
                 }
-                // 一次項不用印^1
                 else if (i == 1) {
-                    cout << coef[i]; 
-                    cout << "x";
+                    cout << "x";//印出x
                 }
-                // 常數項不用印x
-                else {
-                    cout << " + ";
-                    cout << coef[i]; 
-                }
+                first = false;//第一次印出後設為false
             }
         }
     }

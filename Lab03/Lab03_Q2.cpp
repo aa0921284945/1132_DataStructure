@@ -9,7 +9,7 @@ private:
 
 public:
     //構造函數初始化一個動態長度d的陣列並將所有值設為0，以及初始化degree為d
-    Polynomial(int d) : degree(d) {
+    Polynomial(int d = 0) : degree(d) {
         coef = new float[degree + 1];
         for (int i = 0; i <= degree; i++) {
             coef[i] = 0;
@@ -31,37 +31,43 @@ public:
             if (value == 0 && deg == 0) {
                 break; // 遇到 0 0 結束輸入
             }
-            if (deg < 0 || deg > degree) {//檢查次數是否在合理範圍內
-                cout << "Degree out of range! Enter a degree between 0 and " << degree << ".\n";//次數輸入錯誤提示
-                continue;
+            if (deg > degree) {//如果輸入的次數大於最高次數
+                // 重新分配陣列大小
+                float* tmp = new float[deg + 1];//初始化一個新的陣列
+                //將原陣列的值複製到新陣列
+                for (int i = 0; i <= degree; i++) {
+                    tmp[i] = coef[i];
+                }
+                //將新陣列的剩餘部分設為0
+                for (int i = degree + 1; i <= deg; i++) {
+                    tmp[i] = 0;
+                }
+                delete[] coef;//釋放原陣列
+                coef = tmp;//將新陣列指定給原陣列
+                degree = deg;//更新最高次數
             }
             coef[deg] = value; // 在係數陣列存入對應次數的係數
-            if (deg > degree) {
-                degree = deg; // 更新最高次數
-            }
         }
     }
     //通用輸出函數(假設都是+號)
     void PolyInfo() {
+        bool first = true;//初始化第一次為true
         // 由最高次數degree開始遍歷
         for (int i = degree; i >= 0; i--) {
-            // 如果係數不為0，則印出係數和次數
-            if (coef[i] != 0) {
-                // 大於1次的項印出次數
+            if (coef[i] != 0) {//如果係數不是0
+                if (!first) {//如果不是第一次
+                    cout << " + ";//印出+號
+                }
+                if (coef[i] != 0 || i == 0) {//如果係數不是0或是常數項
+                    cout << coef[i];//印出係數
+                }
                 if (i > 1) {
-                    cout << coef[i]; 
-                    cout << "x" << "^" << i <<" + ";//依序列印係數和次數
+                    cout << "x^" << i;//印出次數
                 }
-                // 一次項不用印^1
                 else if (i == 1) {
-                    cout << coef[i]; 
-                    cout << "x";
+                    cout << "x";//印出x
                 }
-                // 常數項不用印x
-                else {
-                    cout << " + ";
-                    cout << coef[i]; 
-                }
+                first = false;//第一次印出後設為false
             }
         }
     }
@@ -73,25 +79,27 @@ public:
         cout << endl << endl;
     }
     //加法函數
-    void add(Polynomial &p) {
-        Polynomial tmp(max(degree, p.degree));//初始化一個多項式暫存結果
+    void add(Polynomial* p) {
+        Polynomial tmp(max(degree, p->degree));//初始化一個多項式暫存結果
         //遍歷最高次數，附值給暫存多項式
         for (int i = 0; i <= tmp.degree; i++) {
-            tmp.coef[i] = coef[i] + p.coef[i];
-        }
+            float a = (i <= degree) ? coef[i] : 0;//如果i小於等於多項式1最高次數，則取係數，否則為0
+            float b = (i <= p->degree) ? p->coef[i] : 0;//如果i小於等於多項式2最高次數，則取係數，否則為0
+            tmp.coef[i] = a + b;
+        }        
         //輸出暫存多項式結果
         cout << "Add : Polynomial 1 + Polynomial 2 = ";
         tmp.PolyInfo();
         cout << endl << endl;
     }
     //乘法函數
-    void Mult(Polynomial &p) {
-        Polynomial tmp(degree + p.degree);//初始化一個多項式暫存結果
+    void Mult(Polynomial* p) {
+        Polynomial tmp(degree + p->degree);//初始化一個多項式暫存結果
         //遍歷多項式1的最高次數
         for (int i = 0; i <= degree; i++) {
             //遍歷多項式2的最高次數
-            for (int j = 0; j <= p.degree; j++) {
-                tmp.coef[i + j] += coef[i] * p.coef[j];//會有重複次數，所以用+=，並附值給暫存多項式
+            for (int j = 0; j <= p->degree; j++) {
+                tmp.coef[i + j] += coef[i] * p->coef[j];//會有重複次數，所以用+=，並附值給暫存多項式
             }
         }
         //輸出暫存多項式結果
@@ -127,13 +135,7 @@ public:
 };
 
 int main() {
-    int Maxp1, Maxp2;//初始化多項式1、2的最高次數
-    cout << "Enter the maximum degree of Polynomial 1: ";
-    cin >> Maxp1;//輸入多項式1的最高次數
-    cout << "Enter the maximum degree of Polynomial 2: ";
-    cin >> Maxp2;//輸入多項式2的最高次數
-
-    Polynomial p1(Maxp1), p2(Maxp2);//初始化多項式1、2
+    Polynomial p1, p2;//初始化多項式1、2
     p1.input();//輸入多項式1
     p2.input();//輸入多項式2
 
@@ -146,10 +148,10 @@ int main() {
     
 
     // 加法結果
-    p1.add(p2);//多項式相加
+    p1.add(&p2);//多項式相加
 
     // 乘法結果
-    p1.Mult(p2);//多項式相乘
+    p1.Mult(&p2);//多項式相乘
 
     // 帶入x結果
     p1.Eval(x);//多項式1在x的值
